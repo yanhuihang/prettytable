@@ -104,7 +104,8 @@ class PrettyTable:
         sort_key - sorting key function, applied to data points before sorting
         valign - default valign for each row (None, "t", "m" or "b")
         reversesort - True or False to sort in descending or ascending order
-        oldsortslice - Slice rows before sorting in the "old style" """
+        oldsortslice - slice rows before sorting in the "old style"
+        index - add an index column (True or False)"""
 
         self.encoding = kwargs.get("encoding", "UTF-8")
 
@@ -135,7 +136,7 @@ class PrettyTable:
             "vertical_char horizontal_char junction_char header_style valign xhtml "
             "print_empty oldsortslice".split()
         )
-        self._options.extend("align valign max_width min_width".split())
+        self._options.extend("align valign max_width min_width index".split())
         for option in self._options:
             if option in kwargs:
                 self._validate_option(option, kwargs[option])
@@ -146,6 +147,7 @@ class PrettyTable:
         self._start = kwargs["start"] or 0
         self._end = kwargs["end"] or None
         self._fields = kwargs["fields"] or None
+        self._index = kwargs["index"] or False
 
         if kwargs["header"] in (True, False):
             self._header = kwargs["header"]
@@ -299,6 +301,7 @@ class PrettyTable:
             "xhtml",
             "print_empty",
             "oldsortslice",
+            "index",
         ):
             self._validate_true_or_false(option, val)
         elif option == "header_style":
@@ -912,6 +915,16 @@ class PrettyTable:
         self._validate_option("oldsortslice", val)
         self._oldsortslice = val
 
+    @property
+    def index(self):
+        """ index - add an index column (True or False) """
+        return self._index
+
+    @index.setter
+    def index(self, val):
+        self._validate_option("index", val)
+        self._index = val
+
     ##############################
     # OPTION MIXER               #
     ##############################
@@ -1234,6 +1247,12 @@ class PrettyTable:
         if not options["oldsortslice"]:
             rows = rows[options["start"] : options["end"]]
 
+        # Add index
+        if options["index"]:
+            INDEX_BEGIN = 1
+            for index in range(INDEX_BEGIN, len(rows) + 1):
+                
+        
         return rows
 
     def _format_row(self, row, options):
